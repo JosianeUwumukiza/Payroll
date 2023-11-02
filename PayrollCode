@@ -1,0 +1,87 @@
+"""
+Authors: Josiane Uwumukiza
+Consulted:
+Date: 19th April 2023
+Purpose: Use Csv files to manage a companies payroll
+"""
+import csv
+import os
+
+def columnAverage(filename,column):
+    """find the average of pay per location"""
+    with open(filename,"r") as infile:
+        dctreader=csv.DictReader(infile)
+        sums=0
+        length=0
+        for dicti in dctreader:
+            try:
+                sums+=float(dicti[column])
+                length+=1
+            except ValueError :
+                pass              
+            
+        try:
+            result=sums/length
+            return (result)
+        except ZeroDivisionError:
+            return None
+        
+def mergeReports(file1,file2,file3):
+    """ merge two reports and write it in the third file"""
+    with open(file1,"r") as infile:
+        dctreader=csv.DictReader(infile)
+        dctlist=list(dctreader)
+        with open(file2,"r") as inputfile:
+            dictireader=csv.DictReader(inputfile)
+            dictilist=list(dictireader)
+            columns=dctlist[0].keys()
+            print (columns)
+                
+            with open(file3,"w") as outfile:
+                dctwriter=csv.DictWriter(outfile,fieldnames=columns)
+                dctwriter.writeheader()
+                dctwriter.writerows(dctlist)
+                dctwriter.writerows(dictilist)
+
+
+def updateReport(orgfile,updatefile,resultfile):
+    """update mistakes from the orginal file using a second updated file"""
+    with open(orgfile,"r") as orginalfile:
+        dctreader=csv.DictReader(orginalfile)
+        dctlist=list(dctreader)
+        columns=dctlist[0].keys()
+        #print(columns)
+        with open(updatefile,"r") as updatefile2:
+            dctread=csv.DictReader(updatefile2)
+            dctreadlist=list(dctread)
+            with open(resultfile,"w") as outfile:
+                dctwriter=csv.DictWriter(outfile,fieldnames=columns)
+                dctwriter.writeheader()
+                new=[dictionaries["Id"] for dictionaries in dctreadlist]
+                print(new)
+                for dicti in dctlist:
+                    if dicti["Id"] in new:
+                        print(dicti["Name"])
+                        pass
+                    else:
+                        dctwriter.writerow(dicti)
+                        
+                dctwriter.writerows(dctreadlist)
+                            
+def salariesReport(filename1,filename2):
+    """Documents people whose wages are salaried"""
+    with open(filename1,"r") as infile:
+        dctreader=csv.DictReader(infile)
+        mylist=["Name","Id","Pay","Hours"]
+        with open(filename2,"w") as outfile:
+            dctwriter=csv.DictWriter(outfile,fieldnames=mylist)
+            dctwriter.writeheader()
+            newlist=[]
+            for dicti in dctreader:
+                if dicti["Wage"]=="salaried":
+                    newlist.append({"Name":dicti["Name"],"Id":dicti["Id"],"Pay":dicti["Pay"],"Hours":dicti["Hours"]})
+                    
+            dctwriter.writerows(newlist)
+    
+      
+    
